@@ -8,7 +8,7 @@ const Detalle = () => {
     const params = useParams()
     let idjuego = params.idjuego;
 
-    const [datos, setDatos] = useState([])
+    const [datos, setDatos] = useState({})
     const [titulo, setTitulo] = useState("")
 
     let URI = API + idjuego;
@@ -17,9 +17,9 @@ const Detalle = () => {
         try {
             const response = await fetch(URI);
             const data = await response.json();
-            //console.log(data) 
-            setTitulo("Productos de  " + idjuego)
-            setDatos(data);
+            console.log(data) 
+           
+            setDatos(data[0]);
 
         } catch (error) {
             console.error(error)
@@ -36,14 +36,14 @@ const Detalle = () => {
                     <div className="row align-items-center">
                         <div className="col-lg-6 col-md-6 col-12">
                             <div className="breadcrumbs-content">
-                                <h1 className="page-title">Single Product</h1>
+                                <h1 className="page-title">Detalles de {datos.nombre}</h1>
                             </div>
                         </div>
                         <div className="col-lg-6 col-md-6 col-12">
                             <ul className="breadcrumb-nav">
-                                <li><a href="index.html"><i className="lni lni-home" /> Home</a></li>
-                                <li><a href="index.html">Shop</a></li>
-                                <li>Single Product</li>
+                                <li><a href="index.html"><i className="lni lni-home" /> Inicio</a></li>
+                                <li><a href="index.html">Tienda</a></li>
+                                <li>{datos.nombre}</li>
                             </ul>
                         </div>
                     </div>
@@ -53,17 +53,17 @@ const Detalle = () => {
             {/* Start Item Details */}
             <section className="item-details section">
                 <div className="container">
-                    <h3 className="text-center my-4">{datos.nombre}</h3>
+                
                     <div className="top-area">
                         <div className="row align-items-center">
                             <div className="col-lg-6 col-md-12 col-12">
                                 <div className="product-images">
                                     <main id="gallery">
                                         <div className="main-img">
-                                            <img src="assets/images/product-details/01.jpg" id="current" alt="#" />
+                                            <img src={`http://localhost/juegos/back/img/${datos.imagen}`}  id="current" alt={`${datos.nombre}`} />
                                         </div>
                                         <div className="images">
-                                            <img src="assets/images/product-details/01.jpg" className="img" alt="#" />
+                                            <img src={`http://localhost/juegos/back/img/${datos.imagen}`} className="img" alt="#" />
                                             <img src="assets/images/product-details/02.jpg" className="img" alt="#" />
                                             <img src="assets/images/product-details/03.jpg" className="img" alt="#" />
                                             <img src="assets/images/product-details/04.jpg" className="img" alt="#" />
@@ -74,13 +74,11 @@ const Detalle = () => {
                             </div>
                             <div className="col-lg-6 col-md-12 col-12">
                                 <div className="product-info">
-                                    <h2 className="title">GoPro Karma Camera Drone</h2>
-                                    <p className="category"><i className="lni lni-tag" /> Drones:<a href="javascript:void(0)">Action
+                                    <h2 className="title">{datos.nombre}</h2>
+                                    <p className="category"><i className="lni lni-tag" /> {datos.genero}<a href="javascript:void(0)">Action
                                         cameras</a></p>
-                                    <h3 className="price">$850<span>$945</span></h3>
-                                    <p className="info-text">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod
-                                        tempor incididunt
-                                        ut labore et dolore magna aliqua.</p>
+                                    <h3 className="price">${datos.precio}<span>${datos.precio}</span></h3>
+                                    <p className="info-text">{datos.descripcion}</p>
                                     <div className="row">
                                         <div className="col-lg-4 col-md-4 col-12">
                                             <div className="form-group color-option">
@@ -130,17 +128,17 @@ const Detalle = () => {
                                         <div className="row align-items-end">
                                             <div className="col-lg-4 col-md-4 col-12">
                                                 <div className="button cart-button">
-                                                    <button className="btn" style={{ width: '100%' }}>Add to Cart</button>
+                                                    <button className="btn" style={{ width: '100%' }}>Agregar al Carrito</button>
                                                 </div>
                                             </div>
                                             <div className="col-lg-4 col-md-4 col-12">
                                                 <div className="wish-button">
-                                                    <button className="btn"><i className="lni lni-reload" /> Compare</button>
+                                                    <button className="btn"><i className="lni lni-reload" /> Consultar</button>
                                                 </div>
                                             </div>
                                             <div className="col-lg-4 col-md-4 col-12">
                                                 <div className="wish-button">
-                                                    <button className="btn"><i className="lni lni-heart" /> To Wishlist</button>
+                                                    <button className="btn"><i className="lni lni-heart" />To Wishlist</button>
                                                 </div>
                                             </div>
                                         </div>

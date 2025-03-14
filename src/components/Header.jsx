@@ -26,7 +26,7 @@ const Header = () => {
                                     </li>
                                     <li>
                                         <div className="select-position">
-                                            <select defaultValue={0}>
+                                            <select defaultValue={1}>
                                                 <option value={0}>English</option>
                                                 <option value={1}>Español</option>
                                                 <option value={2}>Filipino</option>
@@ -53,7 +53,7 @@ const Header = () => {
                             <div className="top-end">
                                 <div className="user">
                                     <i className="lni lni-user" />
-                                    Hello
+                                    Hola!
                                 </div>
                                 <ul className="user-login">
                                     <li>
@@ -132,7 +132,7 @@ const Header = () => {
                                         <div className="shopping-item">
                                             <div className="dropdown-cart-header">
                                                 <span>2 Articulos</span>
-                                                <a href="cart.html">Ver Carrito</a>
+                                                <Link to='/listacompra' href="cart.html">Ver Carrito</Link>
                                             </div>
                                             <ul className="shopping-list">
                                                 <li>

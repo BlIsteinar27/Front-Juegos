@@ -1204,41 +1204,40 @@ top: -1px;
   z-index: -1;
 }
 
-/* Pagination CSS */
-.pagination {
+.custom-pagination-container {
   text-align: left;
   margin: 40px 0 0 0;
   display: block;
 }
 
-.pagination.center {
+.custom-pagination-container.center {
   text-align: center;
 }
 
-.pagination.right {
+.custom-pagination-container.right {
   text-align: right;
 }
 
-.pagination.left {
+.custom-pagination-container.left {
   text-align: left;
 }
 
-.pagination .pagination-list {
+.custom-pagination-list {
   display: inline-block;
   overflow: hidden;
 }
 
-.pagination .pagination-list li {
+.custom-pagination-list .custom-page-item {
   margin-right: 5px;
   display: inline-block;
   margin-top: 10px;
 }
 
-.pagination .pagination-list li:last-child {
+.custom-pagination-list .custom-page-item:last-child {
   margin-right: 0px;
 }
 
-.pagination .pagination-list li a {
+.custom-pagination-list .custom-page-item .custom-page-link {
   background: #fff;
   color: #081828;
   font-weight: 500;
@@ -1249,20 +1248,15 @@ top: -1px;
   border: 1px solid #eee;
 }
 
-.pagination .pagination-list li.active a,
-.pagination .pagination-list li:hover a {
+.custom-pagination-list .custom-page-item.active .custom-page-link,
+.custom-pagination-list .custom-page-item:hover .custom-page-link {
   background: #0167F3;
   color: #fff;
   border-color: transparent;
 }
 
-.pagination .pagination-list li a i {
+.custom-pagination-list .custom-page-item .custom-page-link i {
   font-size: 12px;
-}
-
-.blog-grids.pagination {
-  margin-top: 50px;
-  text-align: center;
 }
 
 .button .btn {
