@@ -1,24 +1,12 @@
-import React, { useEffect, useState } from 'react'
+import React from 'react';
 import { Link } from 'react-router-dom';
+import useDataFetching from '../../hooks/useDataFetching';
 
-const API = 'http://localhost/juegos/back/api/juegos/get/mejorvalorados.php'
+const API = 'http://localhost/juegos/back/api/juegos/get/mejorvalorados.php';
 
 const MejorValorados = () => {
-    const [datos, setDatos] = useState([])
-    const getDatos = async () => {
-        try {
-            const response = await fetch(API);
-            const data = await response.json();
-            //console.log(data)
-            setDatos(data);
+    const datos = useDataFetching(API);
 
-        } catch (error) {
-            console.error(error)
-        }
-    };
-    useEffect(() => {
-        getDatos();
-    }, []);
     return (
         <>
             {/* Start Trending Product Area */}
@@ -27,7 +15,7 @@ const MejorValorados = () => {
                     <div className="row">
                         <div className="col-12">
                             <div className="section-title">
-                                <h2>Juegos Mejores Valorados</h2>
+                                <h2>Juegos Mejor Valorados</h2>
                                 <p>There are many variations of passages of Lorem Ipsum available, but the majority have
                                     suffered alteration in some form.</p>
                             </div>
@@ -36,13 +24,12 @@ const MejorValorados = () => {
                     <div className="row">
                         {datos && datos.map((item, index) => (
                             <div key={index} className="col-lg-3 col-md-6 col-12">
-
                                 {/* Start Single Product */}
                                 <div className="single-product">
                                     <div className="product-image">
                                         <img src={`http://localhost/juegos/back/img/${item.imagen}`} alt="#" />
                                         <div className="button">
-                                            <Link to={`/detalle/${item.idjuego}`} href="product-details.html" className="btn"><i className="lni lni-cart" /> Agregar al Carrito</Link>
+                                            <Link to={`/detalle/${item.idjuego}`} className="btn"><i className="lni lni-cart" /> Agregar al Carrito</Link>
                                         </div>
                                     </div>
                                     <div className="product-info">
@@ -66,13 +53,12 @@ const MejorValorados = () => {
                                 {/* End Single Product */}
                             </div>
                         ))}
-                       
                     </div>
                 </div>
             </section>
             {/* End Trending Product Area */}
         </>
-    )
-}
+    );
+};
 
-export default MejorValorados
+export default MejorValorados;

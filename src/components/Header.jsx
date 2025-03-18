@@ -1,8 +1,29 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { Link } from 'react-router-dom';
 import FiltroGeneros from './(Header)/FiltroGeneros';
+import { useNavigate } from 'react-router-dom';
+import { useState } from "react";
+import { carritoContext } from '../contexts/carritoContext';
 
 const Header = () => {
+    const [txtbuscar, setTxtbuscar] = useState('');
+    const { cart, eliminar } = useContext(carritoContext);
+
+    const menejoTxt = (event) => {
+        setTxtbuscar(event.target.value);
+    };
+    const navigate = useNavigate();
+    const manejoEnvio = (event) => {
+        event.preventDefault();
+        navigate('/busquedas', {
+            state: txtbuscar,
+        });
+
+    };
+
+    const totalItems = cart.reduce((total, item) => total + item.cantidad, 0);
+
+
     return (
         <header className="header navbar-area">
             {/* Start Topbar */}
@@ -97,11 +118,14 @@ const Header = () => {
                                             </select>
                                         </div>
                                     </div>
-                                    <div className="search-input">
-                                        <input type="text" placeholder="Search" />
-                                    </div>
-                                    <div className="search-btn">
-                                        <button><i className="lni lni-search-alt" /></button>
+                                    <div className="search-input" >
+                                        <form className="d-flex" role="search" onSubmit={manejoEnvio}>
+
+                                            <input value={txtbuscar} onChange={menejoTxt} type="text" placeholder="Buscar" />
+                                            <div className="search-btn">
+                                                <button ><i className="lni lni-search-alt" /></button>
+                                            </div>
+                                        </form>
                                     </div>
                                 </div>
                                 {/* navbar search Ends */}
@@ -126,41 +150,34 @@ const Header = () => {
                                     <div className="cart-items">
                                         <a href="javascript:void(0)" className="main-btn">
                                             <i className="lni lni-cart" />
-                                            <span className="total-items">2</span>
+                                            <span className="total-items">{totalItems}</span>
                                         </a>
                                         {/* Shopping Item */}
                                         <div className="shopping-item">
                                             <div className="dropdown-cart-header">
-                                                <span>2 Articulos</span>
+                                                <span>{totalItems} Articulos</span>
                                                 <Link to='/listacompra' href="cart.html">Ver Carrito</Link>
                                             </div>
                                             <ul className="shopping-list">
-                                                <li>
-                                                    <a href="javascript:void(0)" className="remove" title="Remove this item"><i className="lni lni-close" /></a>
-                                                    <div className="cart-img-head">
-                                                        <a className="cart-img" href="product-details.html"><img src="/public/header/cart-items/item1.jpg" alt="#" /></a>
-                                                    </div>
-                                                    <div className="content">
-                                                        <h4><a href="product-details.html">
-                                                            Apple Watch Series 6</a></h4>
-                                                        <p className="quantity">1x - <span className="amount">$99.00</span></p>
-                                                    </div>
-                                                </li>
-                                                <li>
-                                                    <a href="javascript:void(0)" className="remove" title="Remove this item"><i className="lni lni-close" /></a>
-                                                    <div className="cart-img-head">
-                                                        <a className="cart-img" href="product-details.html"><img src="/public/header/cart-items/item2.jpg" alt="#" /></a>
-                                                    </div>
-                                                    <div className="content">
-                                                        <h4><a href="product-details.html">Wi-Fi Smart Camera</a></h4>
-                                                        <p className="quantity">1x - <span className="amount">$35.00</span></p>
-                                                    </div>
-                                                </li>
+                                                {cart.map((item, index) => (
+                                                    <li key={index}>
+                                                        <a href="javascript:void(0)" className="remove" title="Remove this item"onClick={() => eliminar(item)}><i className="lni lni-close" /></a>
+                                                        <div className="cart-img-head">
+                                                            <a className="cart-img" href="product-details.html"><img src={`http://localhost/juegos/back/img/${item.imagen}`} alt="#" /></a>
+                                                        </div>
+                                                        <div className="content">
+                                                            <h4><a href="product-details.html">
+                                                                {item.nombre}</a></h4>
+                                                            <p className="quantity">{item.cantidad}x - <span className="amount">${item.precio}</span></p>
+                                                        </div>
+                                                    </li>
+
+                                                ))}
                                             </ul>
                                             <div className="bottom">
                                                 <div className="total">
                                                     <span>Total</span>
-                                                    <span className="total-amount">$134.00</span>
+                                                    <span className="total-amount">${cart.reduce((total, item) => total + item.precio * item.cantidad, 0).toFixed(2)}</span>
                                                 </div>
                                                 <div className="button">
                                                     <a href="checkout.html" className="btn animate">Checkout</a>
@@ -218,21 +235,18 @@ const Header = () => {
                                         <li className="nav-item">
                                             <a className="dd-menu collapsed" href="javascript:void(0)" data-bs-toggle="collapse" data-bs-target="#submenu-1-2" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">Paginas</a>
                                             <ul className="sub-menu collapse" id="submenu-1-2">
-                                                <li className="nav-item"><a href="about-us.html">Acerca de</a></li>
+                                                <li className="nav-item"><Link to='/listacompra' href="#">Ver lista de compra</Link></li>
                                                 <li className="nav-item"><a href="faq.html">Preguntas Frecuentes</a></li>
                                                 <li className="nav-item"><a href="login.html">Iniciar Sesion</a></li>
                                                 <li className="nav-item"><a href="register.html">Registrar</a></li>
-                                                <li className="nav-item"><a href="mail-success.html">Mail Success</a></li>
-                                                <li className="nav-item"><a href="404.html">404 Error</a></li>
                                             </ul>
                                         </li>
                                         <li className="nav-item">
                                             <a className="dd-menu collapsed" href="javascript:void(0)" data-bs-toggle="collapse" data-bs-target="#submenu-1-3" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">Tienda</a>
                                             <ul className="sub-menu collapse" id="submenu-1-3">
-                                                <li className="nav-item"><Link to='/tienda' href="#">Red de la Tienda</Link></li>
+                                                <li className="nav-item"><Link to='/tienda' href="#">Tienda</Link></li>
                                                 <li className="nav-item"><a href="product-list.html">Lista de la Tienda</a></li>
                                                 <li className="nav-item"><a href="product-details.html">Tienda Individual</a></li>
-                                                <li className="nav-item"><Link to='/listacompra' href="#">Ver lista de compra</Link></li>
                                                 <li className="nav-item"><a href="checkout.html">Checkout</a></li>
                                             </ul>
                                         </li>

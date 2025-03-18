@@ -2,20 +2,21 @@ import React, { useEffect, useState } from 'react';
 import Card from '../components/Card';
 
 const API = 'http://localhost/juegos/back/api/juegos/get/paginado.php';
+const LIMIT = 12;
 
 const Tienda = () => {
     const [datos, setDatos] = useState([]);
     const [paginaActual, setPaginaActual] = useState(1);
     const [totalPaginas, setTotalPaginas] = useState(0);
 
-    const getDatos = async (pagina = 1) => {
+    const getDatos = async (pagina) => {
         try {
-            const response = await fetch(`${API}?limit=12&skip=${(pagina - 1) * 12}`);
+            const response = await fetch(`${API}?limit=${LIMIT}&skip=${(pagina - 1) * LIMIT}`);
             const data = await response.json();
             setDatos(data.data);
-            setTotalPaginas(Math.ceil(data.total / 12));
+            setTotalPaginas(Math.ceil(data.total / LIMIT));
         } catch (error) {
-            console.error(error);
+            console.error('Error al cargar los datos:', error);
         }
     };
 
@@ -45,7 +46,7 @@ const Tienda = () => {
 
         for (let i = startPage; i <= endPage; i++) {
             paginas.push(
-                <li key={i} className="page-item">
+                <li key={i} className={`page-item ${paginaActual === i ? 'active' : ''}`}>
                     <a className="page-link" href="#" onClick={() => handlePaginaClick(i)}>
                         {i}
                     </a>
@@ -64,27 +65,25 @@ const Tienda = () => {
     };
 
     return (
-        <>
-            <div className="container mb-3">
-                <div className="section-title">
-                    <h2 className='text-center mt-5'>Tienda</h2>
-                    <p>Aquí ofrecemos una vista general de la tienda</p>
-                </div>
-                <p className='text-center mb-2'>Página {paginaActual} de {totalPaginas}</p>
-                <div className='d-flex justify-content-center align-items-center mb-3'>
-                    <nav aria-label="Page navigation example">
-                        <ul className="pagination">
-                            {renderPagination()}
-                        </ul>
-                    </nav>
-                </div>
-                <div className="row">
-                    {datos.map((item, index) => (
-                        <Card key={index} item={item} />
-                    ))}
-                </div>
+        <div className="container mb-3">
+            <div className="section-title">
+                <h2 className='text-center mt-5'>Tienda</h2>
+                <p>Aquí ofrecemos una vista general de la tienda</p>
             </div>
-        </>
+            <p className='text-center mb-2'>Página {paginaActual} de {totalPaginas}</p>
+            <div className='d-flex justify-content-center align-items-center mb-3'>
+                <nav aria-label="Page navigation example">
+                    <ul className="pagination">
+                        {renderPagination()}
+                    </ul>
+                </nav>
+            </div>
+            <div className="row">
+                {datos.map((item, index) => (
+                    <Card key={index} item={item} />
+                ))}
+            </div>
+        </div>
     );
 };
 

@@ -1,4 +1,5 @@
 import React from 'react'
+import { Link } from 'react-router-dom'
 
 const Card = ({ item }) => {
     return (
@@ -6,10 +7,10 @@ const Card = ({ item }) => {
             <div className='col-lg-3 col-md-6 col-12'>
                 <div className="single-product">
                     <div className="product-image">
-                        <img src={`http://localhost/juegos/back/img/${item.imagen}`} alt="#" />
+                        <img src={`http://localhost/juegos/back/img/${item.imagen}`} alt={item.nombre} />
                         <span className="new-tag">New</span>
                         <div className="button">
-                            <a href="product-details.html" className="btn"><i className="lni lni-cart" /> Agregar al Carrito</a>
+                            <Link to={`/detalle/${item.idjuego}`} href="#" className="btn"><i className="lni lni-cart" /> Agregar al Carrito</Link>
                         </div>
                     </div>
                     <div className="product-info">

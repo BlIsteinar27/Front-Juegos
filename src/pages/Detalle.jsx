@@ -1,5 +1,6 @@
-import React, { useEffect, useState } from 'react'
-import { useParams } from 'react-router-dom';
+import React, { useContext, useEffect, useState } from 'react'
+import { Link, useParams } from 'react-router-dom';
+import { carritoContext } from '../contexts/carritoContext';
 
 const API = "http://localhost/juegos/back/api/juegos/get/poridjuego.php?idjuego=";
 
@@ -9,7 +10,7 @@ const Detalle = () => {
     let idjuego = params.idjuego;
 
     const [datos, setDatos] = useState({})
-    const [titulo, setTitulo] = useState("")
+    const { cart, agregar } = useContext(carritoContext);
 
     let URI = API + idjuego;
     const getDatos = async () => {
@@ -28,6 +29,10 @@ const Detalle = () => {
     useEffect(() => {
         getDatos();
     }, [params.idjuego]);
+    const handleAgregar = () => {
+        agregar(datos, 1); // Agrega el producto al carrito con cantidad 1
+    };
+
     return (
         <>
             {/* Start Breadcrumbs */}
@@ -41,8 +46,8 @@ const Detalle = () => {
                         </div>
                         <div className="col-lg-6 col-md-6 col-12">
                             <ul className="breadcrumb-nav">
-                                <li><a href="index.html"><i className="lni lni-home" /> Inicio</a></li>
-                                <li><a href="index.html">Tienda</a></li>
+                                <li><Link to='/inicio' href="#"><i className="lni lni-home" /> Inicio</Link></li>
+                                <li><Link to='/tienda' href="#">Tienda</Link></li>
                                 <li>{datos.nombre}</li>
                             </ul>
                         </div>
@@ -64,10 +69,7 @@ const Detalle = () => {
                                         </div>
                                         <div className="images">
                                             <img src={`http://localhost/juegos/back/img/${datos.imagen}`} className="img" alt="#" />
-                                            <img src="assets/images/product-details/02.jpg" className="img" alt="#" />
-                                            <img src="assets/images/product-details/03.jpg" className="img" alt="#" />
-                                            <img src="assets/images/product-details/04.jpg" className="img" alt="#" />
-                                            <img src="assets/images/product-details/05.jpg" className="img" alt="#" />
+                                           
                                         </div>
                                     </main>
                                 </div>
@@ -101,34 +103,14 @@ const Detalle = () => {
                                                 </div>
                                             </div>
                                         </div>
-                                        <div className="col-lg-4 col-md-4 col-12">
-                                            <div className="form-group">
-                                                <label htmlFor="color">Battery capacity</label>
-                                                <select className="form-control" id="color">
-                                                    <option>5100 mAh</option>
-                                                    <option>6200 mAh</option>
-                                                    <option>8000 mAh</option>
-                                                </select>
-                                            </div>
-                                        </div>
-                                        <div className="col-lg-4 col-md-4 col-12">
-                                            <div className="form-group quantity">
-                                                <label htmlFor="color">Quantity</label>
-                                                <select className="form-control">
-                                                    <option>1</option>
-                                                    <option>2</option>
-                                                    <option>3</option>
-                                                    <option>4</option>
-                                                    <option>5</option>
-                                                </select>
-                                            </div>
-                                        </div>
+                                        
+                                       
                                     </div>
                                     <div className="bottom-content">
                                         <div className="row align-items-end">
                                             <div className="col-lg-4 col-md-4 col-12">
                                                 <div className="button cart-button">
-                                                    <button className="btn" style={{ width: '100%' }}>Agregar al Carrito</button>
+                                                    <button className="btn" style={{ width: '100%' }} onClick={handleAgregar}>Agregar al Carrito</button>
                                                 </div>
                                             </div>
                                             <div className="col-lg-4 col-md-4 col-12">
