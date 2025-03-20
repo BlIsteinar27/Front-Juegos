@@ -1,37 +1,20 @@
 import React, { useContext, useEffect, useState } from 'react'
 import { Link, useParams } from 'react-router-dom';
 import { carritoContext } from '../contexts/carritoContext';
+import useFetchWithParams from '../hooks/useFetchWithParams';
 
 const API = "http://localhost/juegos/back/api/juegos/get/poridjuego.php?idjuego=";
 
 const Detalle = () => {
 
-    const params = useParams()
-    let idjuego = params.idjuego;
-
-    const [datos, setDatos] = useState({})
+    const datos = useFetchWithParams(API, 'idjuego', true);
     const { cart, agregar } = useContext(carritoContext);
 
-    let URI = API + idjuego;
-    const getDatos = async () => {
-
-        try {
-            const response = await fetch(URI);
-            const data = await response.json();
-            console.log(data) 
-           
-            setDatos(data[0]);
-
-        } catch (error) {
-            console.error(error)
-        }
-    };
-    useEffect(() => {
-        getDatos();
-    }, [params.idjuego]);
     const handleAgregar = () => {
-        agregar(datos, 1); // Agrega el producto al carrito con cantidad 1
+        agregar(datos, 1);
     };
+    // Verificar si el juego ya está en el carrito
+    const isInCart = cart.some((item) => item.idjuego === datos.idjuego);
 
     return (
         <>
@@ -58,18 +41,18 @@ const Detalle = () => {
             {/* Start Item Details */}
             <section className="item-details section">
                 <div className="container">
-                
+
                     <div className="top-area">
                         <div className="row align-items-center">
                             <div className="col-lg-6 col-md-12 col-12">
                                 <div className="product-images">
                                     <main id="gallery">
                                         <div className="main-img">
-                                            <img src={`http://localhost/juegos/back/img/${datos.imagen}`}  id="current" alt={`${datos.nombre}`} />
+                                            <img src={`http://localhost/juegos/back/img/${datos.imagen}`} id="current" alt={`${datos.nombre}`} />
                                         </div>
                                         <div className="images">
                                             <img src={`http://localhost/juegos/back/img/${datos.imagen}`} className="img" alt="#" />
-                                           
+
                                         </div>
                                     </main>
                                 </div>
@@ -103,14 +86,21 @@ const Detalle = () => {
                                                 </div>
                                             </div>
                                         </div>
-                                        
-                                       
+
+
                                     </div>
                                     <div className="bottom-content">
                                         <div className="row align-items-end">
                                             <div className="col-lg-4 col-md-4 col-12">
                                                 <div className="button cart-button">
-                                                    <button className="btn" style={{ width: '100%' }} onClick={handleAgregar}>Agregar al Carrito</button>
+                                                    <button
+                                                        className="btn"
+                                                        style={{ width: '100%' }}
+                                                        onClick={handleAgregar}
+                                                        disabled={isInCart}
+                                                    >
+                                                       {isInCart ? 'Ya en el Carrito' : 'Agregar al Carrito'}
+                                                    </button>
                                                 </div>
                                             </div>
                                             <div className="col-lg-4 col-md-4 col-12">

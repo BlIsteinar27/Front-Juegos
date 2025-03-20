@@ -1,32 +1,13 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import Card from '../components/Card';
+import usePaginatedFetch from '../hooks/usePaginatedFetch';
 
 const API = 'http://localhost/juegos/back/api/juegos/get/paginado.php';
 const LIMIT = 12;
 
 const Tienda = () => {
-    const [datos, setDatos] = useState([]);
-    const [paginaActual, setPaginaActual] = useState(1);
-    const [totalPaginas, setTotalPaginas] = useState(0);
-
-    const getDatos = async (pagina) => {
-        try {
-            const response = await fetch(`${API}?limit=${LIMIT}&skip=${(pagina - 1) * LIMIT}`);
-            const data = await response.json();
-            setDatos(data.data);
-            setTotalPaginas(Math.ceil(data.total / LIMIT));
-        } catch (error) {
-            console.error('Error al cargar los datos:', error);
-        }
-    };
-
-    useEffect(() => {
-        getDatos(paginaActual);
-    }, [paginaActual]);
-
-    const handlePaginaClick = (pagina) => {
-        setPaginaActual(pagina);
-    };
+    
+    const { datos, paginaActual, totalPaginas, handlePaginaClick } = usePaginatedFetch(API, LIMIT);
 
     const renderPagination = () => {
         if (totalPaginas === 0) return null;

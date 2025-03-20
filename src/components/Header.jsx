@@ -156,7 +156,7 @@ const Header = () => {
                                         <div className="shopping-item">
                                             <div className="dropdown-cart-header">
                                                 <span>{totalItems} Articulos</span>
-                                                <Link to='/listacompra' href="cart.html">Ver Carrito</Link>
+                                                <Link to='/vercarrito' href="cart.html">Ver Carrito</Link>
                                             </div>
                                             <ul className="shopping-list">
                                                 {cart.map((item, index) => (
@@ -235,7 +235,9 @@ const Header = () => {
                                         <li className="nav-item">
                                             <a className="dd-menu collapsed" href="javascript:void(0)" data-bs-toggle="collapse" data-bs-target="#submenu-1-2" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">Paginas</a>
                                             <ul className="sub-menu collapse" id="submenu-1-2">
-                                                <li className="nav-item"><Link to='/listacompra' href="#">Ver lista de compra</Link></li>
+                                                <li className="nav-item"><Link to='/catalogo' href="#">Catalogo de Juegos </Link></li>
+                                                <li className="nav-item"><Link to='/vercarrito' href="#">Ver Carrito de compra</Link></li>
+                                                <li className="nav-item"><Link to='/juegos' href="#">Todos los juegos</Link></li>
                                                 <li className="nav-item"><a href="faq.html">Preguntas Frecuentes</a></li>
                                                 <li className="nav-item"><a href="login.html">Iniciar Sesion</a></li>
                                                 <li className="nav-item"><a href="register.html">Registrar</a></li>
@@ -246,8 +248,8 @@ const Header = () => {
                                             <ul className="sub-menu collapse" id="submenu-1-3">
                                                 <li className="nav-item"><Link to='/tienda' href="#">Tienda</Link></li>
                                                 <li className="nav-item"><a href="product-list.html">Lista de la Tienda</a></li>
-                                                <li className="nav-item"><a href="product-details.html">Tienda Individual</a></li>
-                                                <li className="nav-item"><a href="checkout.html">Checkout</a></li>
+                                                <li className="nav-item"><a href="/detalle/1">Comprar un solo juego</a></li>
+                                                
                                             </ul>
                                         </li>
                                         <li className="nav-item">

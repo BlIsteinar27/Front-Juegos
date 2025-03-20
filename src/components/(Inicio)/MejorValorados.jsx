@@ -5,6 +5,7 @@ import useDataFetching from '../../hooks/useDataFetching';
 const API = 'http://localhost/juegos/back/api/juegos/get/mejorvalorados.php';
 
 const MejorValorados = () => {
+
     const datos = useDataFetching(API);
 
     return (

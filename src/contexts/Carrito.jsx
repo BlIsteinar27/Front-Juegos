@@ -38,17 +38,14 @@ const Carrito = ({ children }) => {
       if (result.isConfirmed) {
         setCart([]);
         Swal.fire({
-
           icon: 'success',
           title: '¡Vaciado!',
           text: 'El carrito ha sido vaciado.',
           timer: 2000,
           showConfirmButton: false
-
         });
       }
     });
-
   }
   const eliminar = (producto) => {
     Swal.fire({
@@ -74,7 +71,6 @@ const Carrito = ({ children }) => {
         });
       }
     });
-
     /*
     para eliminar todos los item
     setCart((currItems)=>{
@@ -83,7 +79,6 @@ const Carrito = ({ children }) => {
     */
     console.log(cart)
   }
-
   const comprar = () => {
     Swal.fire({
       icon: 'success',

@@ -2,6 +2,7 @@ import React, { useEffect } from 'react';
 import { tns } from 'tiny-slider';
 
 const Hero = () => {
+    
     useEffect(() => {
         // Inicializar tiny-slider para el hero-slider
         tns({

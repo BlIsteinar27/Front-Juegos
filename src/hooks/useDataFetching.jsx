@@ -7,6 +7,7 @@ const useDataFetching = (API) => {
     try {
       const response = await fetch(API);
       const data = await response.json();
+      //console.log(data) 
       setDatos(data);
     } catch (error) {
       console.error(error);
