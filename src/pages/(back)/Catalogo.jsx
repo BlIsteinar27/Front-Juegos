@@ -1,18 +1,30 @@
-import React, { useState } from 'react'
+import React, { useState } from 'react';
 import usePaginatedFetch from '../../hooks/usePaginatedFetch';
-import ModalCrud from '../../components/(Catalogo)/ModalCrud';
+import ModalPost from '../../components/(Catalogo)/ModalPost';
+import ModalPut from '../../components/(Catalogo)/ModalPut';
+import Swal from 'sweetalert2';
 
-const API = 'http://localhost/juegos/back/api/juegos/get/paginado.php'
+const API = 'http://localhost/juegos/back/api/juegos/get/paginado.php';
 const LIMIT = 12;
 
 const Catalogo = () => {
-
-    const { datos, paginaActual, totalPaginas, handlePaginaClick } = usePaginatedFetch(API, LIMIT);
-
+    const { datos, paginaActual, totalPaginas, handlePaginaClick, fetchData } = usePaginatedFetch(API, LIMIT);
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
+    const [juegoSeleccionado, setJuegoSeleccionado] = useState(null);
 
     const openModal = () => setIsModalOpen(true);
     const closeModal = () => setIsModalOpen(false);
+
+    const openUpdateModal = (juego) => {
+        setJuegoSeleccionado(juego);
+        setIsUpdateModalOpen(true);
+    };
+
+    const closeUpdateModal = () => {
+        setIsUpdateModalOpen(false);
+        setJuegoSeleccionado(null);
+    };
 
     const renderPagination = () => {
         if (totalPaginas === 0) return null;
@@ -50,6 +62,47 @@ const Catalogo = () => {
         return paginas;
     };
 
+    const handleEliminarJuego = async (id) => {
+        const result = await Swal.fire({
+            title: '¿Estás seguro?',
+            text: "¿Deseas eliminar este juego?",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Sí, eliminar',
+            cancelButtonText: 'Cancelar'
+        });
+
+        if (result.isConfirmed) {
+            try {
+                const response = await fetch('http://localhost/juegos/back/api/juegos/delete.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: `idjuego=${id}`
+                });
+
+                if (response.ok) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Éxito',
+                        text: 'Juego eliminado correctamente',
+                        timer: 2000,
+                        showConfirmButton: false
+                    });
+                    fetchData(paginaActual);
+                } else {
+                    const errorData = await response.json();
+                    Swal.fire('Error', errorData.error || 'Hubo un problema al eliminar el juego', 'error');
+                }
+            } catch (error) {
+                Swal.fire('Error', 'Hubo un problema al conectar con el servidor', 'error');
+            }
+        }
+    };
+
     return (
         <>
             <div className="container mb-3">
@@ -76,25 +129,25 @@ const Catalogo = () => {
                                 <th scope="col">Foto</th>
                                 <th scope="col">Nombre</th>
                                 <th scope="col">Genero</th>
-                                <th scope="col">fecha de publicacion</th>
-                                <th scope="col">descripcion</th>
-                                <th scope="col" >Acciones</th>
+                                <th scope="col">Fecha de publicación</th>
+                                <th scope="col">Descripción</th>
+                                <th scope="col">Acciones</th>
                             </tr>
                         </thead>
                         <tbody>
-                            {datos && datos.map((item, index) => (
+                            {datos.map((item, index) => (
                                 <tr key={index}>
                                     <th scope="row">{index + 1}</th>
-                                    <td >
+                                    <td>
                                         <img src={`http://localhost/juegos/back/img/${item.imagen}`} alt={item.nombre} width={60} />
                                     </td>
-                                    <td >{item.nombre}</td>
-                                    <td >{item.genero}</td>
-                                    <td >{item.fechapublicacion}</td>
-                                    <td ><a href="#" className='btn btn-outline-secondary'><i className="bi bi-info-lg"></i></a></td>
+                                    <td>{item.nombre}</td>
+                                    <td>{item.genero}</td>
+                                    <td>{item.fechapublicacion}</td>
+                                    <td><a href="#" className='btn btn-outline-secondary'><i className="bi bi-info-lg"></i></a></td>
                                     <td className='text-center'>
-                                        <a href="#" className='btn btn-primary btn-sm me-2'><i className="bi bi-pencil-square"></i></a>
-                                        <a href="#" className='btn btn-danger btn-sm ms-2'><i className="bi bi-trash"></i></a>
+                                        <a href="#" className='btn btn-primary btn-sm me-2' onClick={() => openUpdateModal(item)}><i className="bi bi-pencil-square"></i></a>
+                                        <button className='btn btn-danger btn-sm ms-2' onClick={() => handleEliminarJuego(item.idjuego)}><i className="bi bi-trash"></i></button>
                                     </td>
                                 </tr>
                             ))}
@@ -102,9 +155,10 @@ const Catalogo = () => {
                     </table>
                 </div>
             </div>
-            <ModalCrud isOpen={isModalOpen} onClose={closeModal} />
+            <ModalPost isOpen={isModalOpen} onClose={closeModal} fetchData={fetchData} paginaActual={paginaActual} />
+            <ModalPut isOpen={isUpdateModalOpen} onClose={closeUpdateModal} fetchData={fetchData} paginaActual={paginaActual} juegoSeleccionado={juegoSeleccionado} setJuegoSeleccionado={setJuegoSeleccionado} />
         </>
-    )
-}
+    );
+};
 
-export default Catalogo
+export default Catalogo;
