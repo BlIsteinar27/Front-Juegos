@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import Swal from 'sweetalert2';
 
-const ModalPost = ({ isOpen, onClose, fetchData, paginaActual }) => {
+const ModalPost = ({ isOpen, onClose, fetchData, paginaActual, generos, estatus }) => {
+    // Estado para los datos del formulario
     const [formData, setFormData] = useState({
         nombre: '',
         descripcion: '',
@@ -10,36 +11,41 @@ const ModalPost = ({ isOpen, onClose, fetchData, paginaActual }) => {
         fechapublicacion: '',
         precio: '',
         valoracion: '',
-        imagen: null
+        imagen: null,
     });
 
+    // Manejar cambios en los campos de texto
     const handleChange = (e) => {
         const { name, value } = e.target;
-        setFormData({
-            ...formData,
-            [name]: value
-        });
+        setFormData((prevData) => ({
+            ...prevData,
+            [name]: value,
+        }));
     };
 
+    // Manejar cambio en el campo de imagen
     const handleImageChange = (e) => {
-        setFormData({
-            ...formData,
-            imagen: e.target.files[0]
-        });
+        setFormData((prevData) => ({
+            ...prevData,
+            imagen: e.target.files[0],
+        }));
     };
 
+    // Manejar el envío del formulario
     const handleSubmit = async (e) => {
         e.preventDefault();
 
         const formDataToSend = new FormData();
-        Object.keys(formData).forEach(key => {
-            formDataToSend.append(key, formData[key]);
+        Object.keys(formData).forEach((key) => {
+            if (formData[key] !== null) {
+                formDataToSend.append(key, formData[key]);
+            }
         });
 
         try {
             const response = await fetch('http://localhost/juegos/back/api/juegos/post.php', {
                 method: 'POST',
-                body: formDataToSend
+                body: formDataToSend,
             });
 
             if (response.ok) {
@@ -47,8 +53,8 @@ const ModalPost = ({ isOpen, onClose, fetchData, paginaActual }) => {
                     icon: 'success',
                     title: 'Éxito',
                     text: 'Juego creado correctamente',
-                    timer: 2000, // Temporizador de 2 segundos
-                    showConfirmButton: false // No mostrar botón de confirmación
+                    timer: 2000,
+                    showConfirmButton: false,
                 });
                 onClose();
                 fetchData(paginaActual);
@@ -61,6 +67,7 @@ const ModalPost = ({ isOpen, onClose, fetchData, paginaActual }) => {
         }
     };
 
+    // Si el modal no está abierto, no renderizamos nada
     if (!isOpen) return null;
 
     return (
@@ -73,39 +80,90 @@ const ModalPost = ({ isOpen, onClose, fetchData, paginaActual }) => {
                     </div>
                     <div className="modal-body">
                         <form onSubmit={handleSubmit}>
+                            {/* Campos del formulario */}
+                            {[
+                                { label: 'Nombre', name: 'nombre', type: 'text', required: true },
+                                { label: 'Descripción', name: 'descripcion', type: 'textarea', required: true },
+                                { label: 'Fecha de Publicación', name: 'fechapublicacion', type: 'date', required: true },
+                                { label: 'Precio', name: 'precio', type: 'number', step: '0.01', required: true },
+                                { label: 'Valoración', name: 'valoracion', type: 'number', required: true },
+                            ].map(({ label, name, type, step, required }) => (
+                                <div className="mb-3" key={name}>
+                                    <label className="form-label">{label}</label>
+                                    {type === 'textarea' ? (
+                                        <textarea
+                                            className="form-control"
+                                            name={name}
+                                            onChange={handleChange}
+                                            required={required}
+                                        />
+                                    ) : (
+                                        <input
+                                            className="form-control"
+                                            type={type}
+                                            name={name}
+                                            onChange={handleChange}
+                                            step={step}
+                                            required={required}
+                                        />
+                                    )}
+                                </div>
+                            ))}
+
+                            {/* Dropdown de Estado */}
                             <div className="mb-3">
-                                <label className="form-label">Nombre</label>
-                                <input type="text" className="form-control" name="nombre" onChange={handleChange} required />
+                                <label className="form-label">Estado</label>
+                                <select
+                                    className="form-select"
+                                    name="idestatus"
+                                    value={formData.idestatus}
+                                    onChange={handleChange}
+                                    required
+                                >
+                                    <option value="">Selecciona un estado</option>
+                                    {estatus.map((estado) => (
+                                        <option key={estado.idestatus} value={estado.idestatus}>
+                                            {estado.nombre}
+                                        </option>
+                                    ))}
+                                </select>
                             </div>
+
+                            {/* Dropdown de Género */}
                             <div className="mb-3">
-                                <label className="form-label">Descripción</label>
-                                <textarea className="form-control" name="descripcion" onChange={handleChange} required></textarea>
+                                <label className="form-label">Género</label>
+                                <select
+                                    className="form-select"
+                                    name="idgenero"
+                                    value={formData.idgenero}
+                                    onChange={handleChange}
+                                    required
+                                >
+                                    <option value="">Selecciona un género</option>
+                                    {generos.map((genero) => (
+                                        <option key={genero.idgenero} value={genero.idgenero}>
+                                            {genero.nombre}
+                                        </option>
+                                    ))}
+                                </select>
                             </div>
-                            <div className="mb-3">
-                                <label className="form-label">IdEstado</label>
-                                <input type="number" className="form-control" name="idestatus" onChange={handleChange} required />
-                            </div>
-                            <div className="mb-3">
-                                <label className="form-label">IdGénero</label>
-                                <input type="number" className="form-control" name="idgenero" onChange={handleChange} required />
-                            </div>
-                            <div className="mb-3">
-                                <label className="form-label">Fecha de Publicación</label>
-                                <input type="date" className="form-control" name="fechapublicacion" onChange={handleChange} required />
-                            </div>
-                            <div className="mb-3">
-                                <label className="form-label">Precio</label>
-                                <input type="number" step="0.01" className="form-control" name="precio" onChange={handleChange} required />
-                            </div>
-                            <div className="mb-3">
-                                <label className="form-label">Valoración</label>
-                                <input type="number" className="form-control" name="valoracion" onChange={handleChange} required />
-                            </div>
+
+                            {/* Imagen */}
                             <div className="mb-3">
                                 <label className="form-label">Imagen</label>
-                                <input type="file" className="form-control" name="imagen" onChange={handleImageChange} required />
+                                <input
+                                    type="file"
+                                    className="form-control"
+                                    name="imagen"
+                                    onChange={handleImageChange}
+                                    required
+                                />
                             </div>
-                            <button type="submit" className="btn btn-primary">Guardar</button>
+
+                            {/* Botón de envío */}
+                            <button type="submit" className="btn btn-primary">
+                                Guardar
+                            </button>
                         </form>
                     </div>
                 </div>

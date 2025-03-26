@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import Swal from 'sweetalert2';
 
-const ModalPut = ({ isOpen, onClose, fetchData, paginaActual, juegoSeleccionado, setJuegoSeleccionado }) => {
+const ModalPut = ({ isOpen, onClose, fetchData, paginaActual, juegoSeleccionado, setJuegoSeleccionado, generos, estatus }) => {
+    // Estado para los datos del formulario
     const [formData, setFormData] = useState({
         nombre: '',
         descripcion: '',
@@ -10,70 +11,77 @@ const ModalPut = ({ isOpen, onClose, fetchData, paginaActual, juegoSeleccionado,
         fechapublicacion: '',
         precio: '',
         valoracion: '',
-        imagen: null
+        imagen: null,
     });
 
+    // Actualizar el estado cuando cambia el juego seleccionado
     useEffect(() => {
         if (juegoSeleccionado) {
-            setFormData({
-                nombre: juegoSeleccionado.nombre || '',
-                descripcion: juegoSeleccionado.descripcion || '',
-                idestatus: juegoSeleccionado.idestatus || '',
-                idgenero: juegoSeleccionado.idgenero || '',
+            setFormData((prevData) => ({
+                ...prevData,
+                nombre: juegoSeleccionado.nombre_juego || '',
+                descripcion: juegoSeleccionado.descripcion_juego || '',
+                idestatus: juegoSeleccionado.idestatus?.toString() || '',
+                idgenero: juegoSeleccionado.idgenero?.toString() || '',
                 fechapublicacion: juegoSeleccionado.fechapublicacion || '',
-                precio: juegoSeleccionado.precio || '',
-                valoracion: juegoSeleccionado.valoracion || '',
-                imagen: null // No cargamos la imagen aquí
-            });
+                precio: juegoSeleccionado.precio?.toString() || '',
+                valoracion: juegoSeleccionado.valoracion?.toString() || '',
+                imagen: null, // No cargamos la imagen aquí
+            }));
         }
     }, [juegoSeleccionado]);
 
+    // Manejar cambios en los campos de texto
     const handleChange = (e) => {
         const { name, value } = e.target;
-        setFormData({
-            ...formData,
-            [name]: value
-        });
+        setFormData((prevData) => ({
+            ...prevData,
+            [name]: value,
+        }));
     };
 
+    // Manejar cambio en el campo de imagen
     const handleImageChange = (e) => {
-        setFormData({
-            ...formData,
-            imagen: e.target.files[0]
-        });
+        setFormData((prevData) => ({
+            ...prevData,
+            imagen: e.target.files[0],
+        }));
     };
 
+    // Manejar el envío del formulario
     const handleSubmit = async (e) => {
         e.preventDefault();
-    
+
         const formDataToSend = new FormData();
-        Object.keys(formData).forEach(key => {
-            formDataToSend.append(key, formData[key]);
+        Object.keys(formData).forEach((key) => {
+            if (formData[key] !== null && key !== 'imagen') {
+                formDataToSend.append(key, formData[key]);
+            }
         });
-    
-        // Asegúrate de que el idjuego se esté añadiendo correctamente
+
+        // Añadir el ID del juego
         if (juegoSeleccionado) {
             formDataToSend.append('idjuego', juegoSeleccionado.idjuego);
         }
-    
-        // Log de datos a enviar
-        for (let pair of formDataToSend.entries()) {
-            console.log(pair[0] + ', ' + pair[1]);
+
+        // Añadir la nueva imagen si existe
+        if (formData.imagen) {
+            formDataToSend.append('imagen', formData.imagen);
         }
-    
+
         try {
             const response = await fetch('http://localhost/juegos/back/api/juegos/put.php', {
                 method: 'POST',
-                body: formDataToSend
+                body: formDataToSend,
             });
-    
+
             if (response.ok) {
                 Swal.fire({
                     icon: 'success',
                     title: 'Éxito',
                     text: 'Juego actualizado correctamente',
                     timer: 2000,
-                    showConfirmButton: false
+                    showConfirmButton: false,
                 });
                 onClose();
                 setJuegoSeleccionado(null); // Resetear el juego seleccionado
@@ -86,9 +94,8 @@ const ModalPut = ({ isOpen, onClose, fetchData, paginaActual, juegoSeleccionado,
             Swal.fire('Error', 'Hubo un problema al conectar con el servidor', 'error');
         }
     };
-    
-    
 
+    // Si el modal no está abierto, no renderizamos nada
     if (!isOpen) return null;
 
     return (
@@ -101,39 +108,103 @@ const ModalPut = ({ isOpen, onClose, fetchData, paginaActual, juegoSeleccionado,
                     </div>
                     <div className="modal-body">
                         <form onSubmit={handleSubmit}>
+                            {/* Campo oculto para idjuego */}
+                            <input type="hidden" name="idjuego" value={juegoSeleccionado?.idjuego || ''} />
+
+                            {/* Campos del formulario */}
+                            {[
+                                { label: 'Nombre', name: 'nombre', type: 'text', required: true },
+                                { label: 'Descripción', name: 'descripcion', type: 'textarea', required: true },
+                                { label: 'Fecha de Publicación', name: 'fechapublicacion', type: 'date', required: true },
+                                { label: 'Precio', name: 'precio', type: 'number', step: '0.01', required: true },
+                                { label: 'Valoración', name: 'valoracion', type: 'number', required: true },
+                            ].map(({ label, name, type, step, required }) => (
+                                <div className="mb-3" key={name}>
+                                    <label className="form-label">{label}</label>
+                                    {type === 'textarea' ? (
+                                        <textarea
+                                            className="form-control"
+                                            name={name}
+                                            value={formData[name]}
+                                            onChange={handleChange}
+                                            required={required}
+                                        />
+                                    ) : (
+                                        <input
+                                            className="form-control"
+                                            type={type}
+                                            name={name}
+                                            value={formData[name]}
+                                            onChange={handleChange}
+                                            step={step}
+                                            required={required}
+                                        />
+                                    )}
+                                </div>
+                            ))}
+
+                            {/* Dropdown de Estado */}
                             <div className="mb-3">
-                                <label className="form-label">Nombre</label>
-                                <input type="text" className="form-control" name="nombre" value={formData.nombre} onChange={handleChange} required />
+                                <label className="form-label">Estado</label>
+                                <select
+                                    className="form-select"
+                                    name="idestatus"
+                                    value={formData.idestatus}
+                                    onChange={handleChange}
+                                    required
+                                >
+                                    <option value="">Selecciona un estado</option>
+                                    {estatus.map((estado) => (
+                                        <option key={estado.idestatus} value={estado.idestatus}>
+                                            {estado.nombre}
+                                        </option>
+                                    ))}
+                                </select>
                             </div>
+
+                            {/* Dropdown de Género */}
                             <div className="mb-3">
-                                <label className="form-label">Descripción</label>
-                                <textarea className="form-control" name="descripcion" value={formData.descripcion} onChange={handleChange} required></textarea>
+                                <label className="form-label">Género</label>
+                                <select
+                                    className="form-select"
+                                    name="idgenero"
+                                    value={formData.idgenero}
+                                    onChange={handleChange}
+                                    required
+                                >
+                                    <option value="">Selecciona un género</option>
+                                    {generos.map((genero) => (
+                                        <option key={genero.idgenero} value={genero.idgenero}>
+                                            {genero.nombre}
+                                        </option>
+                                    ))}
+                                </select>
                             </div>
+
+                            {/* Imagen */}
                             <div className="mb-3">
-                                <label className="form-label">IdEstado</label>
-                                <input type="number" className="form-control" name="idestatus" value={formData.idestatus} onChange={handleChange} required />
+                                <label className="form-label">Imagen Actual</label>
+                                {juegoSeleccionado?.imagen && (
+                                    <div>
+                                        <img
+                                            src={`http://localhost/juegos/back/img/${juegoSeleccionado.imagen}`}
+                                            alt="Imagen actual del juego"
+                                            style={{ width: '100px', height: 'auto', marginBottom: '10px' }}
+                                        />
+                                    </div>
+                                )}
+                                <input
+                                    type="file"
+                                    className="form-control"
+                                    name="imagen"
+                                    onChange={handleImageChange}
+                                />
                             </div>
-                            <div className="mb-3">
-                                <label className="form-label">IdGénero</label>
-                                <input type="number" className="form-control" name="idgenero" value={formData.idgenero} onChange={handleChange} required />
-                            </div>
-                            <div className="mb-3">
-                                <label className="form-label">Fecha de Publicación</label>
-                                <input type="date" className="form-control" name="fechapublicacion" value={formData.fechapublicacion} onChange={handleChange} required />
-                            </div>
-                            <div className="mb-3">
-                                <label className="form-label">Precio</label>
-                                <input type="number" step="0.01" className="form-control" name="precio" value={formData.precio} onChange={handleChange} required />
-                            </div>
-                            <div className="mb-3">
-                                <label className="form-label">Valoración</label>
-                                <input type="number" className="form-control" name="valoracion" value={formData.valoracion} onChange={handleChange} required />
-                            </div>
-                            <div className="mb-3">
-                                <label className="form-label">Imagen</label>
-                                <input type="file" className="form-control" name="imagen" onChange={handleImageChange} />
-                            </div>
-                            <button type="submit" className="btn btn-primary">Guardar</button>
+
+                            {/* Botón de envío */}
+                            <button type="submit" className="btn btn-primary">
+                                Guardar
+                            </button>
                         </form>
                     </div>
                 </div>

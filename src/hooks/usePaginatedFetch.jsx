@@ -9,7 +9,7 @@ const usePaginatedFetch = (apiUrl, limit) => {
     try {
       const response = await fetch(`${apiUrl}?limit=${limit}&skip=${(pagina - 1) * limit}`);
       const data = await response.json();
-      console.log("Datos obtenidos:", data); // Agrega este log
+      //console.log("Datos obtenidos:", data); // Agrega este log
       setDatos(data.data);
       setTotalPaginas(Math.ceil(data.total / limit));
     } catch (error) {

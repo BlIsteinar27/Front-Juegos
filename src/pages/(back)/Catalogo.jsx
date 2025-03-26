@@ -1,10 +1,14 @@
 import React, { useState } from 'react';
 import usePaginatedFetch from '../../hooks/usePaginatedFetch';
+import useDataFetching from '../../hooks/useDataFetching';
 import ModalPost from '../../components/(Catalogo)/ModalPost';
 import ModalPut from '../../components/(Catalogo)/ModalPut';
 import Swal from 'sweetalert2';
 
 const API = 'http://localhost/juegos/back/api/juegos/get/paginado.php';
+const API2 = 'http://localhost/juegos/back/api/estatus/get/index.php';
+const API3 = 'http://localhost/juegos/back/api/generos/get/index.php';
+
 const LIMIT = 12;
 
 const Catalogo = () => {
@@ -13,27 +17,28 @@ const Catalogo = () => {
     const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
     const [juegoSeleccionado, setJuegoSeleccionado] = useState(null);
 
-    const openModal = () => setIsModalOpen(true);
-    const closeModal = () => setIsModalOpen(false);
+    const estatus = useDataFetching(API2);
+    const generos = useDataFetching(API3);
 
-    const openUpdateModal = (juego) => {
-        setJuegoSeleccionado(juego);
-        setIsUpdateModalOpen(true);
-    };
-
-    const closeUpdateModal = () => {
-        setIsUpdateModalOpen(false);
-        setJuegoSeleccionado(null);
+    const toggleModal = (modalType, juego = null) => {
+        if (modalType === 'create') {
+            setIsModalOpen(!isModalOpen);
+        } else if (modalType === 'update') {
+            setJuegoSeleccionado(juego);
+            setIsUpdateModalOpen(!isUpdateModalOpen);
+        }
     };
 
     const renderPagination = () => {
         if (totalPaginas === 0) return null;
 
         const paginas = [];
+        const isFirstPage = paginaActual === 1;
+        const isLastPage = paginaActual === totalPaginas;
 
         // Botón "Primera"
         paginas.push(
-            <li key="first" className={`page-item ${paginaActual === 1 ? 'disabled' : ''}`}>
+            <li key="first" className={`page-item ${isFirstPage ? 'disabled' : ''}`}>
                 <a className="page-link" href="#" onClick={() => handlePaginaClick(1)}>Primera</a>
             </li>
         );
@@ -54,7 +59,7 @@ const Catalogo = () => {
 
         // Botón "Última"
         paginas.push(
-            <li key="last" className={`page-item ${paginaActual === totalPaginas ? 'disabled' : ''}`}>
+            <li key="last" className={`page-item ${isLastPage ? 'disabled' : ''}`}>
                 <a className="page-link" href="#" onClick={() => handlePaginaClick(totalPaginas)}>Última</a>
             </li>
         );
@@ -111,10 +116,9 @@ const Catalogo = () => {
                     <p className='text-center mb-2'>Página {paginaActual} de {totalPaginas}</p>
                 </div>
                 <div className="d-flex justify-content-between align-items-center mb-3">
-                    <button className="btn btn-success" type="button" onClick={openModal}>
+                    <button className="btn btn-success" type="button" onClick={() => toggleModal('create')}>
                         <i className="bi bi-plus-square me-2" />Agregar Juego Al Catalogo
                     </button>
-
                     <nav aria-label="Page navigation example">
                         <ul className="pagination mb-0">
                             {renderPagination()}
@@ -141,12 +145,12 @@ const Catalogo = () => {
                                     <td>
                                         <img src={`http://localhost/juegos/back/img/${item.imagen}`} alt={item.nombre} width={60} />
                                     </td>
-                                    <td>{item.nombre}</td>
-                                    <td>{item.genero}</td>
+                                    <td>{item.nombre_juego}</td>
+                                    <td>{item.nombre_genero}</td>
                                     <td>{item.fechapublicacion}</td>
                                     <td><a href="#" className='btn btn-outline-secondary'><i className="bi bi-info-lg"></i></a></td>
-                                    <td className='text-center'>
-                                        <a href="#" className='btn btn-primary btn-sm me-2' onClick={() => openUpdateModal(item)}><i className="bi bi-pencil-square"></i></a>
+                                    <td>
+                                        <a href="#" className='btn btn-primary btn-sm me-2' onClick={() => toggleModal('update', item)}><i className="bi bi-pencil-square"></i></a>
                                         <button className='btn btn-danger btn-sm ms-2' onClick={() => handleEliminarJuego(item.idjuego)}><i className="bi bi-trash"></i></button>
                                     </td>
                                 </tr>
@@ -155,8 +159,8 @@ const Catalogo = () => {
                     </table>
                 </div>
             </div>
-            <ModalPost isOpen={isModalOpen} onClose={closeModal} fetchData={fetchData} paginaActual={paginaActual} />
-            <ModalPut isOpen={isUpdateModalOpen} onClose={closeUpdateModal} fetchData={fetchData} paginaActual={paginaActual} juegoSeleccionado={juegoSeleccionado} setJuegoSeleccionado={setJuegoSeleccionado} />
+            <ModalPost isOpen={isModalOpen} onClose={() => toggleModal('create')} fetchData={fetchData} paginaActual={paginaActual} generos={generos} estatus={estatus}/>
+            <ModalPut isOpen={isUpdateModalOpen} onClose={() => toggleModal('update')} fetchData={fetchData} paginaActual={paginaActual} juegoSeleccionado={juegoSeleccionado} setJuegoSeleccionado={setJuegoSeleccionado} generos={generos} estatus={estatus}/>
         </>
     );
 };
